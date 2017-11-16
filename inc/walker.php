@@ -1,14 +1,42 @@
 <?php
+
 class walkernav extends Walker_Nav_Menu
 {
+    public $megaMenuID;
+    public $count;
+    public function __construct()
+    {
+        $this->megaMenuID = 0;
+        $this->count = 0;
+    }
     public function start_lvl(&$output, $depth = 0, $args = array())
     {
         $indent = str_repeat("\t", $depth);
         $submenu = ($depth > 0) ? ' sub-menu' : '';
         $output .= "\n$indent<ul class=\"dropdown-menu$submenu depth_$depth\" >\n";
+        if ($this->megaMenuID != 0) {
+            $output .= "<li class=\"megamenu-column\"><ul>\n";
+        }
+        
+    }
+    public function end_lvl(&$output, $depth = 0, $args = array())
+    {
+        if ($this->megaMenuID != 0) {
+            $output .= "</ul></li>";
+        }
+        $output .= "</ul>";
     }
     public function start_el(&$output, $item, $depth = 0, $args = array(), $id = 0)
     {
+        if ($this->megaMenuID != 0 && $this->megaMenuID === intval($item->menu_item_parent)) {
+            $this->count++;
+            if ($this->count > 2) {
+                $output .= "</ul></li><li class=\"megamenu-column\"><ul>\n";
+                $this->count = 1;
+            }
+        } else {
+            $this->megaMenuID = 0;
+        }
         $indent = ($depth) ? str_repeat("\t", $depth) : '';
         $li_attributes = '';
         $class_names = $value = '';
@@ -18,6 +46,9 @@ class walkernav extends Walker_Nav_Menu
         if ($divider_class_position !== false) {
             $output .= "<li class=\"divider\"></li>\n";
             unset($classes[$divider_class_position]);
+        }
+        if (array_search('megamenu', $classes) !== false) {
+            $this->megaMenuID = $item->ID;
         }
         $classes[] = ($args->has_children) ? 'dropdown' : '';
         $classes[] = ($item->current || $item->current_item_ancestor) ? 'active' : '';

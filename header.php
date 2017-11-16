@@ -26,7 +26,7 @@
 <body <?php body_class(); ?>>
 	<div class="container ">
 		
-    <nav class="navbar navbar-default">
+    <nav class="navbar-megamenu navbar navbar-default">
       <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
