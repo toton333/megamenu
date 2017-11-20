@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 class walkernav extends Walker_Nav_Menu
 {
@@ -14,33 +14,31 @@ class walkernav extends Walker_Nav_Menu
         $indent = str_repeat("\t", $depth);
         $submenu = ($depth > 0) ? ' sub-menu' : '';
         $output .= "\n$indent<ul class=\"dropdown-menu$submenu depth_$depth\" >\n";
-        if ($this->megaMenuID != 0) {
+        if ($this->megaMenuID != 0 && $depth == 0) {
             $output .= "<li class=\"megamenu-column\"><ul>\n";
         }
         
     }
     public function end_lvl(&$output, $depth = 0, $args = array())
     {
-        if ($this->megaMenuID != 0) {
+        if ($this->megaMenuID != 0 && $depth == 0) {
             $output .= "</ul></li>";
         }
         $output .= "</ul>";
     }
     public function start_el(&$output, $item, $depth = 0, $args = array(), $id = 0)
     {
-        if ($this->megaMenuID != 0 && $this->megaMenuID === intval($item->menu_item_parent)) {
-            $this->count++;
-            if ($this->count > 2) {
-                $output .= "</ul></li><li class=\"megamenu-column\"><ul>\n";
-                $this->count = 1;
-            }
-        } else {
-            $this->megaMenuID = 0;
-        }
         $indent = ($depth) ? str_repeat("\t", $depth) : '';
         $li_attributes = '';
         $class_names = $value = '';
         $classes = empty($item->classes) ? array() : (array) $item->classes;
+        if ($this->megaMenuID != 0 && $this->megaMenuID != intval($item->menu_item_parent) && $depth == 0) {
+            $this->megaMenuID = 0;
+        }
+        $column_divider = array_search('column-divider', $classes);
+        if ($column_divider !== false) {
+            $output .= "</ul></li><li class=\"megamenu-column\"><ul>\n";
+        }
         // managing divider: add divider class to an element to get a divider before it.
         $divider_class_position = array_search('divider', $classes);
         if ($divider_class_position !== false) {
@@ -68,6 +66,12 @@ class walkernav extends Walker_Nav_Menu
         $attributes .= ($args->has_children) ? ' class="dropdown-toggle" data-toggle="dropdown"' : '';
         $item_output = $args->before;
         $item_output .= '<a'.$attributes.'>';
+        // Check if item has featured image
+        $has_featured_image = array_search('featured-image', $classes);
+        if ($has_featured_image !== false && $this->megaMenuID != 0) {
+            $postID = url_to_postid( $item->url );
+            $item_output .= "<img alt=\"" . esc_attr($item->attr_title) . "\" src=\"" . get_the_post_thumbnail_url( $postID ) . "\"/>";
+        }
         $item_output .= $args->link_before.apply_filters('the_title', $item->title, $item->ID).$args->link_after;
             // add support for menu item title
             if (strlen($item->attr_title) > 2) {
