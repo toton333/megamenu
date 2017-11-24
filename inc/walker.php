@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 
 class walkernav extends Walker_Nav_Menu
 {
@@ -28,6 +29,11 @@ class walkernav extends Walker_Nav_Menu
     }
     public function start_el(&$output, $item, $depth = 0, $args = array(), $id = 0)
     {
+        $hasMegaMenu = get_post_meta( $item->ID, 'menu-item-mm-megamenu', true );
+        $hasColumnDivider = get_post_meta( $item->ID, 'menu-item-mm-column-divider', true );
+        $hasDivider = get_post_meta( $item->ID, 'menu-item-mm-divider', true );
+        $hasFeaturedImage = get_post_meta( $item->ID, 'menu-item-mm-featured-image', true );
+        $hasDescription = get_post_meta( $item->ID, 'menu-item-mm-description', true );
         $indent = ($depth) ? str_repeat("\t", $depth) : '';
         $li_attributes = '';
         $class_names = $value = '';
@@ -35,17 +41,19 @@ class walkernav extends Walker_Nav_Menu
         if ($this->megaMenuID != 0 && $this->megaMenuID != intval($item->menu_item_parent) && $depth == 0) {
             $this->megaMenuID = 0;
         }
-        $column_divider = array_search('column-divider', $classes);
-        if ($column_divider !== false) {
+        // $column_divider = array_search('column-divider', $classes);
+        if ($hasColumnDivider) {
+            array_push($classes, 'column-divider');
             $output .= "</ul></li><li class=\"megamenu-column\"><ul>\n";
         }
         // managing divider: add divider class to an element to get a divider before it.
-        $divider_class_position = array_search('divider', $classes);
-        if ($divider_class_position !== false) {
+        // $divider_class_position = array_search('divider', $classes);
+        if ($hasDivider) {
             $output .= "<li class=\"divider\"></li>\n";
-            unset($classes[$divider_class_position]);
+            // unset($classes[$divider_class_position]);
         }
-        if (array_search('megamenu', $classes) !== false) {
+        if ($hasMegaMenu) {
+            array_push($classes, 'megamenu');
             $this->megaMenuID = $item->ID;
         }
         $classes[] = ($args->has_children) ? 'dropdown' : '';
@@ -53,6 +61,12 @@ class walkernav extends Walker_Nav_Menu
         $classes[] = 'menu-item-'.$item->ID;
         if ($depth && $args->has_children) {
             $classes[] = 'dropdown-submenu';
+        }
+        if ($hasFeaturedImage) {
+            array_push($classes, 'featured-image');
+        }
+        if ($hasDescription) {
+            array_push($classes, 'description');
         }
         $class_names = implode(' ', apply_filters('nav_menu_css_class', array_filter($classes), $item, $args));
         $class_names = ' class="'.esc_attr($class_names).'"';
@@ -67,8 +81,8 @@ class walkernav extends Walker_Nav_Menu
         $item_output = $args->before;
         $item_output .= '<a'.$attributes.'>';
         // Check if item has featured image
-        $has_featured_image = array_search('featured-image', $classes);
-        if ($has_featured_image !== false && $this->megaMenuID != 0) {
+        // $has_featured_image = array_search('featured-image', $classes);
+        if ($hasFeaturedImage && $this->megaMenuID != 0) {
             $postID = url_to_postid( $item->url );
             $item_output .= "<img alt=\"" . esc_attr($item->attr_title) . "\" src=\"" . get_the_post_thumbnail_url( $postID ) . "\"/>";
         }

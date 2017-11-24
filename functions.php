@@ -1,6 +1,7 @@
 <?php
 
 require get_template_directory().'/inc/walker.php';
+require get_template_directory().'/inc/megamenu-custom-fields.php';
 
 /*
 	========================
