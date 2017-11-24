@@ -49,6 +49,10 @@ header {
           font-size: 14px;
           color: #2E7DD9;
           font-weight: 600; }
+          .navbar-megamenu .navbar-nav > li.megamenu > .dropdown-menu .megamenu-column .featured-image a img {
+            padding: 5px;
+            width: 100%;
+            height: 100px; }
         .navbar-megamenu .navbar-nav > li.megamenu > .dropdown-menu .megamenu-column .description {
           padding: 3px 0; }
           .navbar-megamenu .navbar-nav > li.megamenu > .dropdown-menu .megamenu-column .description a {

@@ -80,10 +80,18 @@ header {
 				}
 
 				.featured-image {
+
 					a {
 						font-size: 14px;
 						color: #2E7DD9;
 						font-weight: 600;
+
+						img{
+							padding: 5px;
+                       
+							width: 100%;
+							height:100px;
+					}
 					}
 				}
 
